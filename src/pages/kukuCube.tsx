@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Song from '../static/JeremyBlakePowerup.m4a';
+import errorSong from '../static/error-4-199275.mp3';
 
 const KukuCube: React.FC = () => {
     const [gridSize, setGridSize] = useState<number>(2); // Grid starts at 2x2
@@ -8,6 +10,24 @@ const KukuCube: React.FC = () => {
     const [isPaused, setIsPaused] = useState<boolean>(false);
     const [randomBox, setRandomBox] = useState<number | null>(null);
     const [gridColor, setGridColor] = useState<string>('#000000'); // Initial color
+
+    // State to manage audio object and play state
+    const [audio] = useState(new Audio(Song));
+    const [errorAudio] = useState(new Audio(errorSong));
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    const playPause = () => {
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
+        }
+        setIsPlaying(!isPlaying);
+    };
+
+    const errorSoundPlay = () => {
+        errorAudio.play();
+    }
 
     // Generate a random number between min and max
     const randomIntFromInterval = (min: number, max: number): number =>
@@ -42,20 +62,24 @@ const KukuCube: React.FC = () => {
     const handleIncorrectClick = (): void => {
         if (!isPaused) {
             setScore((prevScore) => prevScore - 1);
+            errorSoundPlay();
             alert('You clicked the wrong box!');
         }
     };
 
     // Pause and resume the game
     const togglePause = (): void => {
-                setIsPaused((prevState) => !prevState);
+        playPause();
+        setIsPaused((prevState) => !prevState);
     };
 
     // Start the game
     const startGame = (): void => {
         setIsStarted(true);
         setCounter(45);
+        playPause();
     }
+
 
     // Timer countdown
     useEffect(() => {
@@ -67,6 +91,7 @@ const KukuCube: React.FC = () => {
             setTimeout(() => {
                 setScore(0)
                 setIsStarted(false);
+                playPause();
             }, 1200);
 
             // window.location.reload(); 
@@ -80,7 +105,7 @@ const KukuCube: React.FC = () => {
 
             return () => clearInterval(timer);
         }
-    }, [counter, isPaused,isStarted]);
+    }, [counter, isPaused, isStarted]);
 
 
 
@@ -105,7 +130,7 @@ const KukuCube: React.FC = () => {
                         onClick={togglePause}
                         className="px-3 py-0.5 bg-green-500 rounded-lg"
                     >
-                        { isPaused ? 'Resume' : 'Pause'}
+                        {isPaused ? 'Resume' : 'Pause'}
                     </button>}
                 </div>
             </div>
