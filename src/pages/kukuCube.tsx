@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ModalComponent from '../components/modal';
 import Song from '../static/JeremyBlakePowerup.m4a';
 import errorSong from '../static/error-4-199275.mp3';
+import { gsap } from 'gsap';
 
 const KukuCube: React.FC = () => {
     const [gridSize, setGridSize] = useState<number>(2);
@@ -18,6 +19,12 @@ const KukuCube: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [modalTitle, setModalTitle] = useState('');
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const paragraphsRef = useRef<HTMLDivElement | null>(null);
+    const taglineRef = useRef<HTMLParagraphElement | null>(null);
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+
 
     const playPause = () => {
         if (isPlaying) {
@@ -108,6 +115,35 @@ const KukuCube: React.FC = () => {
         generateGrid(gridSize);
     }, [gridSize]);
 
+    // GSAP animations
+   // GSAP animations
+   useEffect(() => {
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    tl.fromTo(
+        containerRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 1 }
+    )
+        .fromTo(
+            Array.from(paragraphsRef.current?.children || []), // Convert HTMLCollection to an array
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, stagger: 0.3, duration: 1 },
+            '-=0.5' // Overlap with container animation
+        )
+        .fromTo(
+            taglineRef.current,
+            { opacity: 0, x: 50 },
+            { opacity: 1, x: 0, duration: 1 },
+            '-=0.6'
+        )
+        .fromTo(
+            buttonRef.current,
+            { opacity: 0, scale: 0.9 },
+            { opacity: 1, scale: 1, duration: 0.8 },
+            '-=0.5'
+        );
+}, []);
     return (
         <>
             <ModalComponent
@@ -166,16 +202,34 @@ const KukuCube: React.FC = () => {
                 </div>
             ) : (
                 // Start Screen
-                <div className='flex flex-col justify-center min-h-[95dvh] bg-purple-400 px-10 gap-5'>
-                    <div className="flex flex-col gap-2">
-                        <p className='text-2xl text-start'>This puzzle is a fun game <span className='font-bold'>KUKU CUBE!</span></p>
-                        <p className='text-xl text-start'>This simple puzzle game will test the quality of your color vision.</p>
-                        <p className='text-xl text-start'>You need to identify one tile which is not the same color with the other tiles.</p>
+                <div
+                    ref={containerRef}
+                    className="flex flex-col justify-center min-h-[95dvh] bg-purple-400 px-10 gap-5"
+                >
+                    <div ref={paragraphsRef} className="flex flex-col gap-2">
+                        <p className="text-2xl text-start">
+                            This puzzle is a fun game <span className="font-bold">KUKU CUBE!</span>
+                        </p>
+                        <p className="text-xl text-start">
+                            This simple puzzle game will test the quality of your color vision.
+                        </p>
+                        <p className="text-xl text-start">
+                            You need to identify one tile which is not the same color as the other tiles.
+                        </p>
                     </div>
-                    <p className='text-5xl text-end'>Easy to play, self described puzzle game,
-                        Enjoy...!</p>
+                    <p ref={taglineRef} className="text-6xl text-end">
+                        Easy to play, self-described puzzle game,
+                       
+                        Enjoy...!
+                    </p>
                     <div className="flex justify-end w-full">
-                        <button onClick={() => startGame()} className='text-black cursor-pointer text-xl text-center px-5 py-2 bg-green-500 w-fit rounded-lg font-semibold'>Let's Play {`>>`}</button>
+                        <button
+                            ref={buttonRef}
+                            onClick={() => startGame()}
+                            className="text-black cursor-pointer text-xl text-center px-5 py-2 bg-green-500 w-fit rounded-lg font-semibold hover:scale-105 hover:shadow-lg transition-transform duration-300"
+                        >
+                            Let's Play {`>>`}
+                        </button>
                     </div>
                 </div>
             )}
