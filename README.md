@@ -42,17 +42,10 @@ Ensure you have the following installed on your system:
    ```bash
    npm install
    ```
-   or
-   ```bash
-   yarn install
-   ```
+   
 4. Start the development server:
    ```bash
-   npm start
-   ```
-   or
-   ```bash
-   yarn start
+   npm run dev
    ```
 
 ---
